@@ -1,40 +1,44 @@
-import React, { Component } from "react";
+import { useState } from "react";
 import Section from "./components/Section/Section";
 import Feedback from "./components/Feedback/Feedback";
 import Statistic from "./components/Statistic/Statistic";
 
-class App extends Component {
-  state = {
-    good: 0,
-    neutral: 0,
-    bad: 0,
+export default function App() {
+
+  const [good, setGood] = useState(0);
+  const [neutral, setNeutral] = useState(0);
+  const [bad, setBad] = useState(0);
+
+  const feedbackTypes = { good, neutral, bad };
+
+  const counter = event => {
+    switch (event.target.name) {
+      case 'good':
+        return setGood(prevState => prevState + 1);
+      case 'neutral':
+        return setNeutral(prevState => prevState + 1);
+      case 'bad':
+        return setBad(prevState => prevState + 1);
+    }
   };
 
+  const getTotal = () =>
+    Object.values(feedbackTypes).reduce((acc, item) => (acc += item), 0);
 
-  counter = (e) =>
-    this.setState({ [e.target.name]: this.state[e.target.name] + 1 });
-
-  getTotal = () =>
-    Object.values(this.state).reduce((acc, item) => (acc += item), 0);
-
-  positivePercentage = () => {
-    return Math.round((this.state.good / this.getTotal()) * 100);
+  const positivePercentage = () => {
+    return Math.round((good / getTotal()) * 100);
   };
 
-  render() {
-    return (
-      <Section title="Please leave feedback">
-        <Feedback counter={this.counter} />
-        <Statistic
-          good={this.state.good}
-          neutral={this.state.neutral}
-          bad={this.state.bad}
-          total={this.getTotal()}
-          positivePercentage={this.positivePercentage()}
-        />
-      </Section>
-    );
-  }
+  return (
+    <Section title="Please leave feedback">
+      <Feedback counter={counter} />
+      <Statistic
+        good={good}
+        neutral={neutral}
+        bad={bad}
+        total={getTotal()}
+        positivePercentage={positivePercentage()}
+      />
+    </Section>
+  );
 }
-
-export default App;
